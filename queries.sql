@@ -1,0 +1,138 @@
+-- ============================================
+-- Mapa de Memórias — Queries (RM01–RM10)
+-- Bases de Dados 2025/2026 — UMinho
+-- ============================================
+
+USE MapaDeMemorias;
+
+-- RM01 — Listar experiências de um utilizador
+SELECT
+    E.id_experiencia, E.titulo, E.descricao,
+    E.data_inicio, E.data_fim, E.tipo_experiencia,
+    D.pais, D.regiao, D.cidade
+FROM EXPERIENCIA AS E
+INNER JOIN DESTINO AS D ON E.id_destino = D.id_destino
+WHERE E.id_autor = ?  -- parâmetro: id do utilizador
+AND E.estado = 'ativa'
+ORDER BY E.data_inicio DESC;
+
+-- RM02 — Pesquisar experiências por localização
+SELECT
+    E.id_experiencia, E.titulo, E.descricao,
+    E.data_inicio, E.data_fim, E.tipo_experiencia,
+    U.nome AS autor_nome,
+    D.pais, D.regiao, D.cidade
+FROM EXPERIENCIA AS E
+INNER JOIN DESTINO AS D ON E.id_destino = D.id_destino
+INNER JOIN UTILIZADOR AS U ON E.id_autor = U.id_utilizador
+WHERE D.pais LIKE ?              -- ex: 'Portugal'
+AND (D.regiao LIKE ? OR ? IS NULL)  -- opcional
+AND (D.cidade LIKE ? OR ? IS NULL)  -- opcional
+AND E.estado = 'ativa'
+AND U.estado_conta = 'ativo'
+ORDER BY E.data_inicio DESC;
+
+-- RM03 — Pesquisar experiências por período temporal
+SELECT
+    E.id_experiencia, E.titulo, E.descricao,
+    E.data_inicio, E.data_fim, E.tipo_experiencia,
+    U.nome AS autor_nome,
+    D.pais, D.cidade
+FROM EXPERIENCIA AS E
+INNER JOIN UTILIZADOR AS U ON E.id_autor = U.id_utilizador
+INNER JOIN DESTINO AS D ON E.id_destino = D.id_destino
+WHERE E.data_inicio BETWEEN ? AND ?
+AND E.estado = 'ativa'
+AND U.estado_conta = 'ativo'
+ORDER BY E.data_inicio DESC;
+
+-- RM04 — Pesquisar experiências por tipo
+SELECT
+    E.id_experiencia, E.titulo, E.descricao,
+    E.data_inicio, E.data_fim, E.tipo_experiencia,
+    U.id_utilizador, U.nome AS autor_nome,
+    D.pais, D.regiao, D.cidade
+FROM EXPERIENCIA AS E
+INNER JOIN UTILIZADOR AS U ON E.id_autor = U.id_utilizador
+INNER JOIN DESTINO AS D ON E.id_destino = D.id_destino
+WHERE E.tipo_experiencia = ?  -- 'cultural', 'aventura', etc.
+AND E.estado = 'ativa'
+AND U.estado_conta = 'ativo'
+ORDER BY E.data_inicio DESC;
+
+-- RM05 — Obter experiências ordenadas por avaliação média
+SELECT
+    E.id_experiencia, E.titulo, E.descricao,
+    E.tipo_experiencia, U.nome AS autor_nome,
+    D.pais, D.cidade,
+    COALESCE(AVG(AV.classificacao), 0) AS avaliacao_media,
+    COUNT(AV.id_avaliacao) AS num_avaliacoes
+FROM EXPERIENCIA AS E
+INNER JOIN UTILIZADOR AS U ON E.id_autor = U.id_utilizador
+INNER JOIN DESTINO AS D ON E.id_destino = D.id_destino
+LEFT OUTER JOIN AVALIACAO AS AV ON E.id_experiencia = AV.id_experiencia
+WHERE E.estado = 'ativa' AND U.estado_conta = 'ativo'
+GROUP BY E.id_experiencia, E.titulo, E.descricao, E.tipo_experiencia, U.nome, D.pais, D.cidade
+ORDER BY avaliacao_media DESC, num_avaliacoes DESC;
+
+-- RM06 — Listar conteúdos multimédia de uma experiência
+SELECT
+    M.id_multimedia, M.tipo_ficheiro,
+    M.caminho_armazenamento, M.descricao,
+    M.data_captura, M.resolucao, M.tamanho_ficheiro,
+    M.data_upload, U.nome AS uploader_nome
+FROM MULTIMEDIA AS M
+INNER JOIN EXPERIENCIA AS E ON M.id_experiencia = E.id_experiencia
+INNER JOIN UTILIZADOR AS U ON M.id_utilizador = U.id_utilizador
+WHERE M.id_experiencia = ?  -- parâmetro: id da experiência
+AND E.estado = 'ativa'
+ORDER BY M.tipo_ficheiro, M.data_upload DESC;
+
+-- RM07 — Obter todos os comentários de uma experiência
+SELECT
+    C.id_comentario, C.texto, C.data_comentario,
+    U.id_utilizador, U.nome AS autor_comentario,
+    E.titulo AS experiencia_titulo
+FROM COMENTARIO AS C
+INNER JOIN UTILIZADOR AS U ON C.id_utilizador = U.id_utilizador
+INNER JOIN EXPERIENCIA AS E ON C.id_experiencia = E.id_experiencia
+WHERE C.id_experiencia = ?  -- parâmetro: id da experiência
+AND E.estado = 'ativa'
+AND U.estado_conta = 'ativo'
+ORDER BY C.data_comentario DESC;
+
+-- RM08 — Calcular avaliação média de uma experiência
+SELECT
+    E.id_experiencia, E.titulo,
+    COALESCE(AVG(AV.classificacao), 0) AS avaliacao_media,
+    COUNT(AV.id_avaliacao) AS num_avaliacoes
+FROM EXPERIENCIA AS E
+LEFT OUTER JOIN AVALIACAO AS AV ON E.id_experiencia = AV.id_experiencia
+WHERE E.id_experiencia = ?  -- parâmetro: id da experiência
+AND E.estado = 'ativa'
+GROUP BY E.id_experiencia, E.titulo;
+
+-- Alternativa usando função:
+-- SELECT fn_media_avaliacao_experiencia(?) AS avaliacao_media;
+
+-- RM09 — Identificar destinos mais populares (top 10)
+SELECT
+    D.id_destino, D.pais, D.regiao, D.cidade,
+    COUNT(E.id_experiencia) AS num_experiencias
+FROM DESTINO AS D
+INNER JOIN EXPERIENCIA AS E ON D.id_destino = E.id_destino
+WHERE E.estado = 'ativa'
+GROUP BY D.id_destino, D.pais, D.regiao, D.cidade
+ORDER BY num_experiencias DESC
+LIMIT 10;
+
+-- RM10 — Listar utilizadores mais ativos (top 10)
+SELECT
+    U.id_utilizador, U.nome, U.email, U.pais_origem,
+    COUNT(E.id_experiencia) AS num_experiencias
+FROM UTILIZADOR AS U
+INNER JOIN EXPERIENCIA AS E ON U.id_utilizador = E.id_autor
+WHERE U.estado_conta = 'ativo' AND E.estado = 'ativa'
+GROUP BY U.id_utilizador, U.nome, U.email, U.pais_origem
+ORDER BY num_experiencias DESC
+LIMIT 10;
