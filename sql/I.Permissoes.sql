@@ -4,7 +4,7 @@
 CREATE ROLE IF NOT EXISTS 'role_admin';
 CREATE ROLE IF NOT EXISTS 'role_app';
 CREATE ROLE IF NOT EXISTS 'role_readonly';
--- Opcional:
+--(opcional):
 -- CREATE ROLE IF NOT EXISTS 'role_moderator';
 
 -- 2) Atribuir permissões às roles
@@ -16,7 +16,7 @@ GRANT SELECT, INSERT, UPDATE ON MapaDeMemorias.* TO 'role_app';
 
 GRANT SELECT ON MapaDeMemorias.* TO 'role_readonly';
 
--- Opcional: moderador (exemplo genérico)
+--OPCIONAL: moderador (exemplo genérico)
 -- GRANT SELECT, UPDATE ON MapaDeMemorias.EXPERIENCIA TO 'role_moderator';
 -- GRANT SELECT, UPDATE ON MapaDeMemorias.MULTIMEDIA   TO 'role_moderator';
 -- GRANT SELECT, UPDATE ON MapaDeMemorias.COMENTARIO   TO 'role_moderator';
