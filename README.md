@@ -1,5 +1,4 @@
 <div align="center">
-
 <h1>🗺️ ᗰᗩᑭᗩ ᗪE ᗰEᗰóᖇIᗩꌗ</h1>
 <h3>Relational Database System for Travel Cataloguing</h3>
 
@@ -18,6 +17,18 @@
 A full relational database system designed for **Sofia**, a passionate traveller who needed a structured way to store, organise and revisit her travel memories across photos, videos and personal notes.
 
 The system was designed and implemented from scratch: from requirements analysis and interviews with the client, through ER modelling, relational schema normalisation and full MySQL implementation with queries, views, indexes, procedures and triggers.
+
+---
+
+## 📐 Conceptual Model
+
+![Conceptual Model](modelo-conceptual/MapaDeMemorias_MapaConceitual.png)
+
+---
+
+## 🗃️ Logical Model
+
+![Logical Model](modelo-logico/ModeloLogico.png)
 
 ---
 
@@ -53,14 +64,24 @@ The system was designed and implemented from scratch: from requirements analysis
 
 ```
 travel-memories-database/
+├── modelo-conceptual/
+│   └── MapaDeMemorias_MapaConceitual.png
+├── modelo-logico/
+│   ├── ModeloLogico.png
+│   └── DIAGRAMA-EER.mwb
+├── relaX/
+│   └── relaX.txt
 ├── sql/
-│   ├── schema.sql              # Database creation and table definitions
-│   ├── queries.sql             # Analytical queries (RM01–RM10)
-│   ├── views_indexes.sql       # Views and performance indexes
-│   ├── procedures_triggers.sql # Stored procedures, functions and triggers
-│   └── users_permissions.sql   # Roles and access control
-├── docs/
-│   └── relatorio.pdf           # Full project report
+│   ├── BD_MapaDeMemorias.sql
+│   ├── E.InterrogacoesSQL.sql
+│   ├── F.CriacaoBD.sql
+│   ├── G.Povoamento.sql
+│   ├── H.Views.sql
+│   ├── I.Permissoes.sql
+│   ├── J.Indices.sql
+│   ├── K.Triggers.sql
+│   └── queries.sql
+├── G16 BD2526.pdf
 └── README.md
 ```
 
@@ -70,19 +91,25 @@ travel-memories-database/
 
 ```bash
 # Create the database and tables
-mysql -u root -p < sql/schema.sql
+mysql -u root -p < sql/F.CriacaoBD.sql
 
-# Load views and indexes
-mysql -u root -p < sql/views_indexes.sql
+# Populate the database
+mysql -u root -p < sql/G.Povoamento.sql
+
+# Load views
+mysql -u root -p < sql/H.Views.sql
+
+# Load indexes
+mysql -u root -p < sql/J.Indices.sql
 
 # Load procedures, functions and triggers
-mysql -u root -p < sql/procedures_triggers.sql
+mysql -u root -p < sql/K.Triggers.sql
 
 # Set up users and permissions
-mysql -u root -p < sql/users_permissions.sql
+mysql -u root -p < sql/I.Permissoes.sql
 
 # Run analytical queries
-mysql -u root -p MapaDeMemorias < sql/queries.sql
+mysql -u root -p MapaDeMemorias < sql/E.InterrogacoesSQL.sql
 ```
 
 ---
@@ -95,7 +122,7 @@ mysql -u root -p MapaDeMemorias < sql/queries.sql
 
 ## 👩‍💻 Authors
 
-**Carolina Dias** - [@carolinavdias](https://github.com/carolinavdias)  
+**Carolina Dias** — [@carolinavdias](https://github.com/carolinavdias)  
 **António Barroso**  
 **Gabriel Carvalho**  
 **Gustavo Silva**
