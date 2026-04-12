@@ -16,7 +16,7 @@ WHERE E.id_autor = 1
 ORDER BY E.data_inicio DESC;
 
 
--- RM02 — Pesquisar experiências por localização
+-- RM02 - Pesquisar experiências por localização
 -- (país = Portugal)
 SELECT
     E.id_experiencia, E.titulo, E.descricao,
@@ -32,7 +32,7 @@ WHERE D.pais = 'Portugal'
 ORDER BY E.data_inicio DESC;
 
 
--- RM03 — Pesquisar experiências por período temporal
+-- RM03- Pesquisar experiências por período temporal
 -- (entre junho e agosto de 2024)
 SELECT
     E.id_experiencia, E.titulo, E.descricao,
@@ -48,7 +48,7 @@ WHERE E.data_inicio BETWEEN '2024-06-01' AND '2024-08-31'
 ORDER BY E.data_inicio DESC;
 
 
--- RM04 — Pesquisar experiências por tipo
+-- RM04 - Pesquisar experiências por tipo
 -- (tipo = cultural)
 SELECT
     E.id_experiencia, E.titulo, E.descricao,
@@ -64,7 +64,7 @@ WHERE E.tipo_experiencia = 'cultural'
 ORDER BY E.data_inicio DESC;
 
 
--- RM05 — Obter experiências ordenadas por avaliação média
+-- RM05 - Obter experiências ordenadas por avaliação média
 SELECT
     E.id_experiencia, E.titulo, E.descricao,
     E.tipo_experiencia, U.nome AS autor_nome,
@@ -81,7 +81,7 @@ GROUP BY E.id_experiencia, E.titulo, E.descricao,
 ORDER BY avaliacao_media DESC, num_avaliacoes DESC;
 
 
--- RM06 — Listar conteúdos multimédia de uma experiência
+-- RM06 - Listar conteúdos multimédia de uma experiência
 -- (experiência 1 = Verão em Lisboa)
 SELECT
     M.id_multimedia, M.tipo_ficheiro,
@@ -96,7 +96,7 @@ WHERE M.id_experiencia = 1
 ORDER BY M.tipo_ficheiro, M.data_upload DESC;
 
 
--- RM07 — Obter todos os comentários de uma experiência
+-- RM07 - Obter todos os comentários de uma experiência
 -- (experiência 1 = Verão em Lisboa)
 SELECT
     C.id_comentario, C.texto, C.data_comentario,
@@ -111,7 +111,7 @@ WHERE C.id_experiencia = 1
 ORDER BY C.data_comentario DESC;
 
 
--- RM08 — Calcular avaliação média de uma experiência
+-- RM08 - Calcular avaliação média de uma experiência
 -- (experiência 1 = Verão em Lisboa)
 SELECT
     E.id_experiencia, E.titulo,
@@ -127,7 +127,7 @@ GROUP BY E.id_experiencia, E.titulo;
 SELECT fn_media_avaliacao_experiencia(1) AS avaliacao_media;
 
 
--- RM09 — Identificar destinos mais populares
+-- RM09- Identificar destinos mais populares
 SELECT
     D.id_destino, D.pais, D.regiao, D.cidade,
     COUNT(E.id_experiencia) AS num_experiencias
@@ -139,7 +139,7 @@ ORDER BY num_experiencias DESC
 LIMIT 10;
 
 
--- RM10 — Listar utilizadores mais ativos
+-- RM10 - Listar utilizadores mais ativos
 SELECT
     U.id_utilizador, U.nome, U.email, U.pais_origem,
     COUNT(E.id_experiencia) AS num_experiencias
