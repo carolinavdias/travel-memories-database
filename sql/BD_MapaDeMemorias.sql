@@ -420,3 +420,5 @@ BEGIN
     SET NEW.data_comentario = COALESCE(NEW.data_comentario, NOW());
 END$$
 DELIMITER ;
+
+-- :)
