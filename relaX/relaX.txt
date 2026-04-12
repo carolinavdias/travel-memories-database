@@ -1,0 +1,66 @@
+-- ANEXO D. RELAÇÕES RELAX
+-- Mapa de Memórias - Álgebra Relacional :)
+
+-- RM01 - Listar todas as experiências de um utilizador
+pi titulo, tipo_experiencia, pais, regiao, cidade (
+  (sigma id_autor = 1 (EXPERIENCIA))
+  join EXPERIENCIA.id_destino = DESTINO.id_destino (DESTINO)
+)
+
+-- RM02 - Pesquisar experiências por localização
+pi titulo, nome, pais, regiao, cidade (
+  ((sigma cidade = 'Lisboa' (DESTINO))
+   join DESTINO.id_destino = EXPERIENCIA.id_destino (EXPERIENCIA))
+  join EXPERIENCIA.id_autor = UTILIZADOR.id_utilizador (UTILIZADOR)
+)
+
+-- RM03 - Pesquisar experiências por período temporal
+pi titulo, nome, pais, regiao, cidade (
+  ((EXPERIENCIA)
+   join EXPERIENCIA.id_autor = UTILIZADOR.id_utilizador (UTILIZADOR))
+  join EXPERIENCIA.id_destino = DESTINO.id_destino (DESTINO)
+)
+
+-- RM04 - Pesquisar experiências por tipo
+pi titulo, nome, pais, regiao, cidade (
+  ((sigma tipo_experiencia = 'cultural' (EXPERIENCIA))
+   join EXPERIENCIA.id_autor = UTILIZADOR.id_utilizador (UTILIZADOR))
+  join EXPERIENCIA.id_destino = DESTINO.id_destino (DESTINO)
+)
+
+-- RM05 - Obter experiências ordenadas por avaliação média
+pi titulo, tipo_experiencia, avg_classificacao (
+  (gamma id_experiencia; avg(classificacao) (AVALIACAO))
+  join AVALIACAO.id_experiencia = EXPERIENCIA.id_experiencia (EXPERIENCIA)
+)
+
+-- RM06 - Listar conteúdos multimédia de uma experiência
+pi tipo_ficheiro, nome, titulo (
+  ((sigma id_experiencia = 1 (MULTIMEDIA))
+   join MULTIMEDIA.id_utilizador = UTILIZADOR.id_utilizador (UTILIZADOR))
+  join MULTIMEDIA.id_experiencia = EXPERIENCIA.id_experiencia (EXPERIENCIA)
+)
+
+-- RM07 - Obter todos os comentários de uma experiência
+pi texto, nome, titulo (
+  ((sigma id_experiencia = 1 (COMENTARIO))
+   join COMENTARIO.id_utilizador = UTILIZADOR.id_utilizador (UTILIZADOR))
+  join COMENTARIO.id_experiencia = EXPERIENCIA.id_experiencia (EXPERIENCIA)
+)
+
+-- RM08 - Calcular avaliação média de uma experiência
+gamma id_experiencia; avg(classificacao) -> avaliacao_media, count(classificacao) -> num_avaliacoes (
+  sigma id_experiencia = 1 (AVALIACAO)
+)
+
+-- RM09 - Identificar destinos mais populares
+gamma pais, regiao, cidade; count(id_experiencia) -> num_experiencias (
+  (DESTINO)
+  join DESTINO.id_destino = EXPERIENCIA.id_destino (EXPERIENCIA)
+)
+
+-- RM10 - Listar utilizadores mais ativos
+gamma nome, email, pais_origem; count(id_experiencia) -> num_experiencias (
+  (UTILIZADOR)
+  join UTILIZADOR.id_utilizador = EXPERIENCIA.id_autor (EXPERIENCIA)
+)
